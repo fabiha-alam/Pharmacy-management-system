@@ -32,8 +32,60 @@ namespace PharmacyManagement.Controllers
             _groqService = groqService;
         }
 
-        // MY PRESCRIPTIONS & INVENTORY MATCHING
-        
+        // MY PURCHASES HISTORY
+
+        [HttpGet]
+        public async Task<IActionResult> MyPurchases()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.CustomerId == null)
+            {
+                return Unauthorized();
+            }
+
+            var purchases = await _context.Purchases
+                .Where(p => p.CustomerId == user.CustomerId.Value)
+                .OrderByDescending(p => p.PurchaseDate)
+                .Select(p => new PurchaseViewModel
+                {
+                    PurchaseId = p.PurchaseId,
+                    CustomerId = p.CustomerId,
+                    TotalAmount = p.TotalAmount,
+                    PaymentMethod = p.PaymentMethod,
+                    Status = p.Status,
+                    PurchaseDate = p.PurchaseDate
+                })
+                .ToListAsync();
+
+            return View("~/Views/Customer/MyPurchases.cshtml", purchases);
+        }
+
+        // CONFIRM PURCHASE
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Buy(int purchaseId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.CustomerId == null)
+            {
+                return Unauthorized();
+            }
+
+            var purchase = await _context.Purchases
+                .FirstOrDefaultAsync(p => p.PurchaseId == purchaseId && p.CustomerId == user.CustomerId.Value);
+
+            if (purchase != null)
+            {
+                purchase.Status = "Completed";
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(MyPurchases));
+        }
+
+        // MY PRESCRIPTIONS
+
         [HttpGet]
         public async Task<IActionResult> MyPrescriptions()
         {
@@ -136,7 +188,7 @@ namespace PharmacyManagement.Controllers
         }
 
         // UPLOAD PRESCRIPTION (POST & AI SCANNING)
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadPrescription(PrescriptionUploadViewModel viewModel)
@@ -201,6 +253,7 @@ namespace PharmacyManagement.Controllers
         }
 
         // CHECKOUT
+
         [HttpGet]
         public async Task<IActionResult> Checkout(int? medicineId, int? quantity)
         {
@@ -259,7 +312,7 @@ namespace PharmacyManagement.Controllers
                 prescriptions.Add(new SelectListItem
                 {
                     Value = p.PrescriptionId.ToString(),
-                    Text = $"Prescription #{p.PrescriptionId} - Uploaded: {p.UploadedAt:yyyy-MM-dd} ({p.Status})"
+                    Text = $"Prescription #{p.PrescriptionId} - Uploaded: {p.UploadedAt:yyyy-MM-dd}"
                 });
             }
 
@@ -274,6 +327,8 @@ namespace PharmacyManagement.Controllers
 
             return View("~/Views/Customer/Checkout.cshtml", viewModel);
         }
+
+        // PROCESS CHECKOUT
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -344,7 +399,7 @@ namespace PharmacyManagement.Controllers
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction(nameof(MyPurchases));
                 }
                 catch (Exception)
                 {
