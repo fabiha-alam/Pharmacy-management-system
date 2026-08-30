@@ -22,6 +22,7 @@ namespace PharmacyManagement.Models
 
         public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
         public Customer? Customer { get; set; }
+        public string? ExtractedMedicines { get; set; }
 
         public ICollection<Purchase> Purchases { get; set; } =
             new List<Purchase>();

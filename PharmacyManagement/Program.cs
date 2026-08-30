@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PharmacyManagement.Data;
 using PharmacyManagement.Models;
+using PharmacyManagement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,15 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     options.SlidingExpiration = true;
 });
+
+// GROQ AI SERVICE CONFIGURATION
+builder.Services.AddHttpClient("GroqClient", client =>
+{
+    client.BaseAddress = new Uri("https://api.groq.com/openai/v1/");
+    client.DefaultRequestHeaders.Add("Authorization", "Bearer ");
+});
+
+builder.Services.AddScoped<GroqPrescriptionService>();
 
 var builderApp = builder.Build();
 

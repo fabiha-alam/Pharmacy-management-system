@@ -360,6 +360,9 @@ namespace PharmacyManagement.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ExtractedMedicines")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FileUrl")
                         .IsRequired()
                         .HasMaxLength(500)
