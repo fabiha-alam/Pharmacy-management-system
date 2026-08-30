@@ -10,8 +10,6 @@
         public string? ExtractedMedicines { get; set; }
         public string Status { get; set; } = string.Empty;
         public DateTime UploadedAt { get; set; }
-
-        // Added to hold the parsed medicines and their stock availability
         public List<PrescriptionItemMatchViewModel> MatchedItems { get; set; } = new();
     }
 

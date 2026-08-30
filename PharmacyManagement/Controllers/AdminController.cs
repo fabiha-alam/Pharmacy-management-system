@@ -1,23 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PharmacyManagement.Data;
 using PharmacyManagement.Models;
 using PharmacyManagement.Models.ViewModels.Admin;
-using PharmacyManagement.Models.ViewModels.Customer;
 using PharmacyManagement.Models.ViewModels.Medicine;
 using PharmacyManagement.Models.ViewModels.Prescription;
 using PharmacyManagement.Models.ViewModels.Purchase;
 using PharmacyManagement.Models.ViewModels.Stock;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace PharmacyManagement.Controllers
 {
     [Authorize(Roles = "Admin")]

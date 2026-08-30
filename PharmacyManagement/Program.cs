@@ -37,7 +37,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddHttpClient("GroqClient", client =>
 {
     client.BaseAddress = new Uri("https://api.groq.com/openai/v1/");
-    client.DefaultRequestHeaders.Add("Authorization", "Bearer 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");
+    client.DefaultRequestHeaders.Add("Authorization", "Bearer ");
 });
 
 builder.Services.AddScoped<GroqPrescriptionService>();
